@@ -1,0 +1,8 @@
+﻿---
+IncludeBlocks: Preserve
+IndentWidth: '4'
+SortIncludes: 'false'
+SortUsingDeclarations: 'false'
+NamespaceIndentation: All
+
+...
