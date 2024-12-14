@@ -1,7 +1,34 @@
+#include "slm/slm-matrix.h"
+#include "slm/slm-vector.h"
 #include <array>
 #include <iostream>
 
 #include <slm.h>
+
+    class ABC {
+        public:
+        ABC operator+(const ABC& other) {
+           return *this; 
+        }
+        ABC operator*(const ABC& other) {
+           return *this;
+        }
+        ABC operator/(const ABC& other) {
+            return *this;
+        }
+        ABC operator-(const ABC& other) {
+            return *this;
+        }
+        ABC(int i){}
+        ABC(double d){}
+        ABC() = default;
+        ABC(const ABC&) = default;
+        ABC(const ABC&&){};
+        ABC& operator=(const ABC&) = default;
+        ABC& operator=(const ABC&&){
+            return *this;
+        };
+    };
 
 int main() {
 
@@ -42,7 +69,6 @@ int main() {
 
     std::cout << "\n" << dmat3.determinant() << std::endl;
 
-
     std::cout << "Matrix A:" << std::endl;
     for (size_t i = 0; i < 3; i++) {
         for (size_t j = 0; j < 3; j++) {
@@ -59,8 +85,56 @@ int main() {
     const float term1 = A(0, 0) * (A(1, 1) * A(2, 2) - A(1, 2) * A(2, 1));
     const float term2 = A(0, 1) * (A(1, 0) * A(2, 2) - A(1, 2) * A(2, 0));
     const float term3 = A(0, 2) * (A(1, 0) * A(2, 1) - A(1, 1) * A(2, 0));
-    std::cout << "Term 1: " << term1 << ", Term 2: " << -term2 << ", Term 3: " << term3 << std::endl;
+    std::cout << "Term 1: " << term1 << ", Term 2: " << -term2
+              << ", Term 3: " << term3 << std::endl;
     std::cout << "Determinant: " << term1 - term2 + term3 << std::endl;
+
+    matrix3f hm3 = matrix3f({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+
+    std::cout << "\n"
+              << matrix3f::concat_horizontal(hm3, matrix3f::identity())
+              << std::endl;
+
+    matrix3f swp_mat3 = matrix3f::identity();
+    std::cout << "\n" << swp_mat3.swap_row(1, 2, 1, 3) << std::endl;
+
+    matrix3f inv_mat3({{0, 6, 5}, {2, 3, 5}, {3, 3, 8}});
+    matrix3f inv_mat3_inv = inv_mat3.inverse();
+
+    std::cout << "\n" << inv_mat3_inv << std::endl;
+
+    std::cout << "\n" << inv_mat3 * inv_mat3_inv << std::endl;
+
+    matrix2f det_mat2({{5, 3}, {8, 7}});
+
+    std::cout << "\n" << det_mat2.determinant() << std::endl;
+
+    matrix4f det_mat4({{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}, {13, 14, 15, 16}});
+
+    std::cout << "\n" << det_mat4.determinant() << std::endl;
+
+    // std::cout << "\n" << det_mat4.inverse() << std::endl;
+
+    base_matrix<float, 1, 1> m1({{1}});
+
+    std::cout << "\n" << m1 << std::endl;
+
+    std::cout << "\n" << m1.inverse() << std::endl;
+
+    std::cout << "\n" << m1.determinant() << std::endl;
+
+    matrix3f mmt3 = matrix3f({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+    vector3f vm3 = vector3f({1, 2, 3});
+
+    std::cout << "\n" << mmt3 * vm3 << std::endl;
+    std::cout << "\n" << vm3 * mmt3 << std::endl;
+
+    // std::cout << "\n" << m1(2, 2) << std::endl;
+
+    base_vector<char, 3> vec;
+
+
+    base_vector<ABC, 3> vA;
 
     return 0;
 }

@@ -7,9 +7,6 @@ set(SRC_FILES
     ${SRC_DIR}/main.cpp
 )
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 set(EXE_NAME Main)
 
 add_executable(${EXE_NAME} ${SRC_FILES})

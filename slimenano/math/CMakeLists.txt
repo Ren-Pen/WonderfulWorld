@@ -26,6 +26,8 @@ target_include_directories(${LIB_NAME} PUBLIC
     $<INSTALL_INTERFACE:include/${NAMESPACE}>
 )
 
+target_compile_features(${LIB_NAME} PUBLIC cxx_std_20)
+
 if(MSVC)
     target_compile_options(${LIB_NAME} PRIVATE /W4 /WX)
 else()

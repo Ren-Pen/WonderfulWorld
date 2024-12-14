@@ -4,5 +4,13 @@ IndentWidth: '4'
 SortIncludes: 'false'
 SortUsingDeclarations: 'false'
 NamespaceIndentation: All
-
+IndentPPDirectives: BeforeHash
+SpacesInParentheses: false
+SpacesInContainerLiterals: false
+SpaceBeforeParens: ControlStatements
+PointerAlignment: Right
+AllowShortLambdasOnASingleLine: false
+ColumnLimit: 120
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: InlineOnly
 ...
