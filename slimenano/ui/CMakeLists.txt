@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(
-    Slimenano-math
+    Slimenano-ui
     VERSION 1.0.0
-    DESCRIPTION "This is a Slimenano free math library"
+    DESCRIPTION "This is a Slimenano free ui library"
     LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -12,11 +12,11 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(GLOBAL_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/../include)
 
 set(SRC_FILES
-    ${SRC_DIR}/slm.cpp
+    ${SRC_DIR}/slui.cpp
 )
 
 set(NAMESPACE Slimenano)
-set(LIB_NAME Math)
+set(LIB_NAME UI)
 
 add_library(${LIB_NAME} ${SRC_FILES})
 
@@ -42,13 +42,8 @@ install(TARGETS ${LIB_NAME} EXPORT ${NAMESPACE}${LIB_NAME}Targets
     ARCHIVE DESTINATION lib
 )
 
-install(FILES ${SRC_DIR}/slm.h
+install(FILES ${SRC_DIR}/slui.h
     DESTINATION include/${NAMESPACE}
-)
-
-install(FILES ${SRC_DIR}/slm/slm-vector.h
-              ${SRC_DIR}/slm/slm-matrix.h
-    DESTINATION include/${NAMESPACE}/slm
 )
 
 

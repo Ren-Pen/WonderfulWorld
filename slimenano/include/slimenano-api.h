@@ -23,7 +23,11 @@
 
     #define SLIMENANO_LIMIT_EPSILON 1e-6
 
+    #define SLIMENANO_MATH_VERSION "1.0"
+    #define SLIMENANO_UI_VERSION "1.0"
+
 namespace slimenano {
+
     namespace internal {
         template <class T> struct empty_t {};
         template <bool b, class T> using maybe = std::conditional_t<b, T, empty_t<T>>;

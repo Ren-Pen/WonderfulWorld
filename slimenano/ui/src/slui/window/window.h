@@ -1,0 +1,6 @@
+#pragma once
+#ifndef __FILE_SLIMENANO_UI_WINDOW_H
+#define __FILE_SLIMENANO_UI_WINDOW_H
+
+
+#endif //!__FILE_SLIMENANO_UI_WINDOW_H
