@@ -12,7 +12,7 @@
     #include <ostream>
     #include <slimenano-api.h>
 
-namespace slimenano {
+namespace slimenano::math {
 
     template <Arithmetic T, std::size_t N> class base_vector;
 
@@ -46,8 +46,8 @@ namespace slimenano {
         };
 
         template <Arithmetic T, size_t N>
-        class base_vector_support : public maybe<N == 2, base_vector_support_2<T>>,
-                                    public maybe<N == 3, base_vector_support_3<T>> {};
+        class base_vector_support : public slimenano::internal::maybe<N == 2, base_vector_support_2<T>>,
+                                    public slimenano::internal::maybe<N == 3, base_vector_support_3<T>> {};
 
         template <Arithmetic T, size_t N> class base_vector_properties_2 {
           public:
@@ -74,9 +74,9 @@ namespace slimenano {
         };
 
         template <Arithmetic T, size_t N>
-        class base_vector_properties : public maybe<N >= 2, base_vector_properties_2<T, N>>,
-                                       public maybe<N >= 3, base_vector_properties_3<T, N>>,
-                                       public maybe<N >= 4, base_vector_properties_4<T, N>> {};
+        class base_vector_properties : public slimenano::internal::maybe<N >= 2, base_vector_properties_2<T, N>>,
+                                       public slimenano::internal::maybe<N >= 3, base_vector_properties_3<T, N>>,
+                                       public slimenano::internal::maybe<N >= 4, base_vector_properties_4<T, N>> {};
 
     } // namespace internal
 

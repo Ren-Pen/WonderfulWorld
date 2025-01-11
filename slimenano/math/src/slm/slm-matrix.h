@@ -10,7 +10,7 @@
     #include <slimenano-api.h>
     #include <slm/slm-vector.h>
 
-namespace slimenano {
+namespace slimenano::math {
     template <Arithmetic T, std::size_t Rows, std::size_t Cols> class base_matrix;
     namespace internal {
         template <Arithmetic T, std::size_t N> class base_matrix_support_identity {
@@ -41,7 +41,7 @@ namespace slimenano {
                             pivot_row = p_i;
                         }
                     }
-                    if (std::abs(max_pivot) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
+                    if (std::abs(max_pivot) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
                         return false;
                     }
                     if (pivot_row != j) {
@@ -54,7 +54,7 @@ namespace slimenano {
                 }
 
                 for (std::size_t j = 0; j < N - 1; ++j) {
-                    if (std::abs(U(j, j)) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
+                    if (std::abs(U(j, j)) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
                         return false;
                     }
 
@@ -146,7 +146,7 @@ namespace slimenano {
                     det = -det;
                 }
 
-                if (std::abs(det) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
+                if (std::abs(det) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
                     return 0;
                 }
 
@@ -155,10 +155,10 @@ namespace slimenano {
         };
 
         template <Arithmetic T, std::size_t N>
-        class base_matrix_support_determinant : public maybe<N == 1, base_matrix_support_determinant_1<T>>,
-                                                public maybe<N == 2, base_matrix_support_determinant_2<T>>,
-                                                public maybe<N == 3, base_matrix_support_determinant_3<T>>,
-                                                public maybe<N >= 4, base_matrix_support_determinant_n<T, N>> {};
+        class base_matrix_support_determinant : public slimenano::internal::maybe<N == 1, base_matrix_support_determinant_1<T>>,
+                                                public slimenano::internal::maybe<N == 2, base_matrix_support_determinant_2<T>>,
+                                                public slimenano::internal::maybe<N == 3, base_matrix_support_determinant_3<T>>,
+                                                public slimenano::internal::maybe<N >= 4, base_matrix_support_determinant_n<T, N>> {};
 
         template <Arithmetic T, std::size_t N> class base_matrix_support_inverse {
           public:
@@ -225,10 +225,10 @@ namespace slimenano {
         };
 
         template <Arithmetic T, std::size_t Rows, std::size_t Cols>
-        class base_matrix_support : public maybe<Rows == Cols, base_matrix_support_identity<T, Rows>>,
-                                    public maybe<Rows == Cols, base_matrix_support_determinant<T, Rows>>,
-                                    public maybe<Rows == Cols, base_matrix_support_LUP<T, Rows>>,
-                                    public maybe<Rows == Cols, base_matrix_support_inverse<T, Rows>> {};
+        class base_matrix_support : public slimenano::internal::maybe<Rows == Cols, base_matrix_support_identity<T, Rows>>,
+                                    public slimenano::internal::maybe<Rows == Cols, base_matrix_support_determinant<T, Rows>>,
+                                    public slimenano::internal::maybe<Rows == Cols, base_matrix_support_LUP<T, Rows>>,
+                                    public slimenano::internal::maybe<Rows == Cols, base_matrix_support_inverse<T, Rows>> {};
     } // namespace internal
 
     template <Arithmetic T, std::size_t Rows, std::size_t Cols>

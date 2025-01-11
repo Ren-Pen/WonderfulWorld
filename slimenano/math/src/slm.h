@@ -5,9 +5,9 @@
 #include <slm/slm-vector.h>
 #include <slm/slm-matrix.h>
 
-namespace slimenano {
+namespace slimenano::math {
 
-    SLIMENANO_API void slm_version();
+    SLIMENANO_API void version();
 
     using vector2f = base_vector<float, 2>;
     using vector3f = base_vector<float, 3>;

@@ -9,6 +9,7 @@ add_compile_definitions(_SLIMENANO_LIBRARY)
 
 add_subdirectory(math)
 add_subdirectory(ui)
+add_subdirectory(event)
 
 set(NAMESPACE Slimenano)
 

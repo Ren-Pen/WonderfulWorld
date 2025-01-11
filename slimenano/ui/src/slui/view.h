@@ -2,7 +2,7 @@
 #ifndef __FILE_SLIMENANO_UI_COMPONENT_H
     #define __FILE_SLIMENANO_UI_COMPONENT_H
 
-namespace slimenano {
+namespace slimenano::ui {
 
 class view {
 public:

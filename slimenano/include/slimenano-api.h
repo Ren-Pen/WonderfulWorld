@@ -21,10 +21,11 @@
         #pragma warning Unknown dynamic link import / export semantics.
     #endif
 
-    #define SLIMENANO_LIMIT_EPSILON 1e-6
+    #define __SLIMENANO_LIMIT_EPSILON 1e-6
 
-    #define SLIMENANO_MATH_VERSION "1.0"
-    #define SLIMENANO_UI_VERSION "1.0"
+    #define __SLIMENANO_MATH_VERSION "1.0"
+    #define __SLIMENANO_UI_VERSION "1.0"
+    #define __SLIMENANO_EVENT_VERSION "1.0"
 
 namespace slimenano {
 
