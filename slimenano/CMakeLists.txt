@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5.0)
 project(
-    slimenano
-    VERSION 1.0.0
-    DESCRIPTION "This is a slimenano utils package"
-    LANGUAGES CXX)
+        slimenano
+        VERSION 1.0.0
+        DESCRIPTION "This is a slimenano utils package"
+        LANGUAGES CXX)
 
 add_compile_definitions(_SLIMENANO_LIBRARY)
 
@@ -21,7 +21,7 @@ set(PackageFullLibraries "")
 file(GLOB subdirectory_list RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/*)
 foreach (subdirectory ${subdirectory_list})
     if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${subdirectory})
-        if(EXISTS ${PROJECT_SOURCE_DIR}/${subdirectory}/CMakeLists.txt)
+        if (EXISTS ${PROJECT_SOURCE_DIR}/${subdirectory}/CMakeLists.txt)
             list(APPEND PackageFullLibraries ${subdirectory})
         endif (EXISTS ${PROJECT_SOURCE_DIR}/${subdirectory}/CMakeLists.txt)
     endif (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${subdirectory})
@@ -35,9 +35,13 @@ foreach (RegistryLibrary ${PackageFullLibraries})
 
     message(STATUS "ADDED OPTION: SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}")
 
-    add_subdirectory(${RegistryLibrary})
+    if (${SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}})
 
-    target_link_libraries(${LIB_NAME} INTERFACE Slimenano::${RegistryLibrary})
+        add_subdirectory(${RegistryLibrary})
+
+        target_link_libraries(${LIB_NAME} INTERFACE Slimenano::${RegistryLibrary})
+
+    endif (${SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}})
 
 endforeach (RegistryLibrary ${PackageFullLibraries})
 #add_subdirectory(UI)
@@ -46,34 +50,38 @@ endforeach (RegistryLibrary ${PackageFullLibraries})
 #add_subdirectory(event)
 #target_link_libraries(${LIB_NAME} INTERFACE Slimenano::Event)
 
-get_target_property(PackageAvailableLibraries Slimenano::Package INTERFACE_LINK_LIBRARIES)
-
 set(SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "")
 
-foreach (AvailableLibrary IN LISTS PackageAvailableLibraries)
+get_target_property(PackageAvailableLibraries Slimenano::Package INTERFACE_LINK_LIBRARIES)
 
-    string(REPLACE "::" "" AvailableLibraryConfigName ${AvailableLibrary})
+if (NOT PackageAvailableLibraries STREQUAL "PackageAvailableLibraries-NOTFOUND")
 
-    set(SLIMENANO_PACKAGE_IMPORT_COMMAND "")
+    foreach (AvailableLibrary IN LISTS PackageAvailableLibraries)
 
-    message(STATUS "DETECTED ACTIVE LIBRARY IN PACKAGE: ${AvailableLibrary}")
+        string(REPLACE "::" "" AvailableLibraryConfigName ${AvailableLibrary})
 
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[if(NOT TARGET ]=])
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")\n")
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[    include(${CMAKE_CURRENT_LIST_DIR}/]=])
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibraryConfigName})
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND "Targets.cmake)\n")
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[endif(NOT TARGET ]=])
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")")
+        set(SLIMENANO_PACKAGE_IMPORT_COMMAND "")
 
-    list(APPEND SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "${SLIMENANO_PACKAGE_IMPORT_COMMAND}")
+        message(STATUS "DETECTED ACTIVE LIBRARY IN PACKAGE: ${AvailableLibrary}")
 
-    unset(SLIMENANO_PACKAGE_IMPORT_COMMAND)
-    unset(AvailableLibraryConfigName)
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[if(NOT TARGET ]=])
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")\n")
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[    include(${CMAKE_CURRENT_LIST_DIR}/]=])
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibraryConfigName})
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND "Targets.cmake)\n")
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[endif(NOT TARGET ]=])
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
+        string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")")
 
-endforeach (AvailableLibrary IN LISTS PackageAvailableLibraries)
+        list(APPEND SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "${SLIMENANO_PACKAGE_IMPORT_COMMAND}")
+
+        unset(SLIMENANO_PACKAGE_IMPORT_COMMAND)
+        unset(AvailableLibraryConfigName)
+
+    endforeach (AvailableLibrary IN LISTS PackageAvailableLibraries)
+
+endif (NOT PackageAvailableLibraries STREQUAL "PackageAvailableLibraries-NOTFOUND")
 
 string(JOIN "\n\n" SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES ${SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES})
 
