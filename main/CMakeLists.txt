@@ -13,9 +13,7 @@ add_executable(${EXE_NAME} ${SRC_FILES})
 
 find_package(Slimenano CONFIG)
 
-target_link_libraries(${EXE_NAME} PRIVATE Slimenano::Math)
-target_link_libraries(${EXE_NAME} PRIVATE Slimenano::UI)
-target_link_libraries(${EXE_NAME} PRIVATE Slimenano::Event)
+target_link_libraries(${EXE_NAME} PRIVATE Slimenano::Package)
 
 install(TARGETS ${EXE_NAME}
     RUNTIME DESTINATION bin

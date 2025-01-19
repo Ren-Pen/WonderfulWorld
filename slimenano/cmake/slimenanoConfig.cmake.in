@@ -1,0 +1,5 @@
+@SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES@
+
+if(NOT TARGET Slimenano::Package)
+    include("${CMAKE_CURRENT_LIST_DIR}/SlimenanoPackageTargets.cmake")
+endif(NOT TARGET Slimenano::Package)

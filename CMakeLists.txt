@@ -8,7 +8,5 @@ if (WIN32)
     set(CMAKE_STATIC_LIBRARY_PREFIX "")
 endif ()
 
-set(BUILD_SHARED_LIBS ON)
-
 add_subdirectory(slimenano)
 add_subdirectory(main)

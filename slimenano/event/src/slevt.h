@@ -3,8 +3,6 @@
 #    define __FILE_SLIMENANO_EVENT_H
 #include <slimenano-api.h>
 
-namespace slimenano::event {
-    SLIMENANO_API void version();
-}
+__SLIMENANO_LIBRARIES_DECLARED(event);
 
 #endif
