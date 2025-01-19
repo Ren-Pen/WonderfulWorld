@@ -10,10 +10,12 @@ namespace slimenano::event {
 
     class SLIMENANO_API Event {
       public:
-        Event(EventIdentifier id): m_id(id) {};
+        explicit Event(const EventIdentifier id): m_id(id) {}
         virtual ~Event() = default;
 
-        EventIdentifier id() const { return m_id; }
+        [[nodiscard]] EventIdentifier id() const { return m_id; }
+      protected:
+
       private:
         EventIdentifier m_id;
     };

@@ -4,6 +4,7 @@
 #    include <iostream>
 #    include <type_traits>
 #    include <concepts>
+#    include <slimenano-version.h>
 
 #    ifdef _MSC_VER
 #        ifdef SLIMENANO_LIBRARY
@@ -23,10 +24,6 @@
 #    endif
 
 #    define SLIMENANO_LIMIT_EPSILON 1e-6
-
-#    define SLIMENANO_MATH_VERSION "1.0"
-#    define SLIMENANO_UI_VERSION "1.0"
-#    define SLIMENANO_EVENT_VERSION "1.0"
 
 #    ifndef SLIMENANO_LOG_OUTPUT_STREAM
 #        define SLIMENANO_LOG_OUTPUT_STREAM std::cout
@@ -65,6 +62,15 @@ namespace slimenano {
     namespace internal {
         template <class T> struct empty_t {};
         template <bool b, class T> using maybe = std::conditional_t<b, T, empty_t<T>>;
+        class serializable {
+
+          public:
+            virtual ~serializable() = default;
+
+          protected:
+            virtual size_t serialize(void* buffer, size_t bufferSize) = 0;
+            virtual size_t deserialize(const void* buffer, size_t bufferSize) = 0;
+        };
 
     } // namespace internal
 
