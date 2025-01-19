@@ -16,14 +16,35 @@ add_library(${LIB_NAME} INTERFACE)
 
 add_library(${NAMESPACE}::${LIB_NAME} ALIAS ${LIB_NAME})
 
-add_subdirectory(math)
-target_link_libraries(${LIB_NAME} INTERFACE Slimenano::Math)
+set(PackageFullLibraries "")
 
-add_subdirectory(ui)
-target_link_libraries(${LIB_NAME} INTERFACE Slimenano::UI)
+file(GLOB subdirectory_list RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/*)
+foreach (subdirectory ${subdirectory_list})
+    if (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${subdirectory})
+        if(EXISTS ${PROJECT_SOURCE_DIR}/${subdirectory}/CMakeLists.txt)
+            list(APPEND PackageFullLibraries ${subdirectory})
+        endif (EXISTS ${PROJECT_SOURCE_DIR}/${subdirectory}/CMakeLists.txt)
+    endif (IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${subdirectory})
+endforeach (subdirectory ${subdirectory_list})
 
-add_subdirectory(event)
-target_link_libraries(${LIB_NAME} INTERFACE Slimenano::Event)
+foreach (RegistryLibrary ${PackageFullLibraries})
+
+    string(TOUPPER ${RegistryLibrary} LibraryOptionName)
+
+    option(SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName} "Add Slimenano::${RegistryLibrary} library to Slimenano::Package" ON)
+
+    message(STATUS "ADDED OPTION: SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}")
+
+    add_subdirectory(${RegistryLibrary})
+
+    target_link_libraries(${LIB_NAME} INTERFACE Slimenano::${RegistryLibrary})
+
+endforeach (RegistryLibrary ${PackageFullLibraries})
+#add_subdirectory(UI)
+#target_link_libraries(${LIB_NAME} INTERFACE Slimenano::UI)
+#
+#add_subdirectory(event)
+#target_link_libraries(${LIB_NAME} INTERFACE Slimenano::Event)
 
 get_target_property(PackageAvailableLibraries Slimenano::Package INTERFACE_LINK_LIBRARIES)
 
@@ -35,6 +56,8 @@ foreach (AvailableLibrary IN LISTS PackageAvailableLibraries)
 
     set(SLIMENANO_PACKAGE_IMPORT_COMMAND "")
 
+    message(STATUS "DETECTED ACTIVE LIBRARY IN PACKAGE: ${AvailableLibrary}")
+
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[if(NOT TARGET ]=])
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")\n")
@@ -43,13 +66,20 @@ foreach (AvailableLibrary IN LISTS PackageAvailableLibraries)
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND "Targets.cmake)\n")
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND [=[endif(NOT TARGET ]=])
     string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ${AvailableLibrary})
-    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")\n")
+    string(APPEND SLIMENANO_PACKAGE_IMPORT_COMMAND ")")
 
-    string(APPEND SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "${SLIMENANO_PACKAGE_IMPORT_COMMAND}\n")
+    list(APPEND SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "${SLIMENANO_PACKAGE_IMPORT_COMMAND}")
+
+    unset(SLIMENANO_PACKAGE_IMPORT_COMMAND)
+    unset(AvailableLibraryConfigName)
 
 endforeach (AvailableLibrary IN LISTS PackageAvailableLibraries)
 
+string(JOIN "\n\n" SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES ${SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES})
+
 configure_file(${PROJECT_SOURCE_DIR}/cmake/${NAMESPACE}Config.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${NAMESPACE}Config.cmake @ONLY)
+
+unset(SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES)
 
 install(
         FILES cmake/${NAMESPACE}Config.cmake
