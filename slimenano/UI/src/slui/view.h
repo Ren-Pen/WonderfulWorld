@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_UI_COMPONENT_H
-    #define __FILE_SLIMENANO_UI_COMPONENT_H
+#ifndef FILE_SLIMENANO_UI_COMPONENT_H
+    #define FILE_SLIMENANO_UI_COMPONENT_H
 
 namespace slimenano::ui {
 
@@ -19,4 +19,4 @@ protected:
 
 } // namespace slimenano
 
-#endif // __FILE_SLIMENANO_UI_COMPONENT_H
+#endif // FILE_SLIMENANO_UI_COMPONENT_H

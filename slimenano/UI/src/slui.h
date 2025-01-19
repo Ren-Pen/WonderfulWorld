@@ -1,10 +1,8 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_UI_H
-#define __FILE_SLIMENANO_UI_H
+#ifndef FILE_SLIMENANO_UI_H
+#define FILE_SLIMENANO_UI_H
 #include <slimenano-api.h>
 
-namespace slimenano::ui {
-    SLIMENANO_API void version();
-}
+SLIMENANO_LIBRARIES_DECLARED(ui);
 
-#endif //!__FILE_SLIMENANO_UI_H
+#endif //!FILE_SLIMENANO_UI_H

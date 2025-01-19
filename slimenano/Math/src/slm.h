@@ -1,13 +1,13 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_MATH_H
-#define __FILE_SLIMENANO_MATH_H
+#ifndef FILE_SLIMENANO_MATH_H
+#define FILE_SLIMENANO_MATH_H
 #include <slimenano-api.h>
 #include <slm/slm-vector.h>
 #include <slm/slm-matrix.h>
 
-namespace slimenano::math {
+SLIMENANO_LIBRARIES_DECLARED(math);
 
-    SLIMENANO_API void version();
+namespace slimenano::math {
 
     using vector2f = base_vector<float, 2>;
     using vector3f = base_vector<float, 3>;
@@ -27,4 +27,4 @@ namespace slimenano::math {
 
 } // namespace slimenano
 
-#endif //!__FILE_SLIMENANO_MATH_H
+#endif //!FILE_SLIMENANO_MATH_H

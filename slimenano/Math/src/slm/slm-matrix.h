@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_MATH_MTX_H
-    #define __FILE_SLIMENANO_MATH_MTX_H
+#ifndef FILE_SLIMENANO_MATH_MTX_H
+    #define FILE_SLIMENANO_MATH_MTX_H
     #include <cstddef>
     #include <array>
     #include <initializer_list>
@@ -41,7 +41,7 @@ namespace slimenano::math {
                             pivot_row = p_i;
                         }
                     }
-                    if (std::abs(max_pivot) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
+                    if (std::abs(max_pivot) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
                         return false;
                     }
                     if (pivot_row != j) {
@@ -54,7 +54,7 @@ namespace slimenano::math {
                 }
 
                 for (std::size_t j = 0; j < N - 1; ++j) {
-                    if (std::abs(U(j, j)) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
+                    if (std::abs(U(j, j)) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
                         return false;
                     }
 
@@ -146,7 +146,7 @@ namespace slimenano::math {
                     det = -det;
                 }
 
-                if (std::abs(det) < static_cast<T>(__SLIMENANO_LIMIT_EPSILON)) {
+                if (std::abs(det) < static_cast<T>(SLIMENANO_LIMIT_EPSILON)) {
                     return 0;
                 }
 

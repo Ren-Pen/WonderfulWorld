@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_EVENT_EVENT_H
-#    define __FILE_SLIMENANO_EVENT_EVENT_H
+#ifndef FILE_SLIMENANO_EVENT_EVENT_H
+#    define FILE_SLIMENANO_EVENT_EVENT_H
 #    include <cstdint>
 #    include <slevt.h>
 
@@ -19,4 +19,4 @@ namespace slimenano::event {
     };
 } // namespace slimenano::event
 
-#endif // __FILE_SLIMENANO_EVENT_EVENT_H
+#endif // FILE_SLIMENANO_EVENT_EVENT_H

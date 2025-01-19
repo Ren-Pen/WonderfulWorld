@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_UI_STYLE_H
-#    define __FILE_SLIMENANO_UI_STYLE_H
+#ifndef FILE_SLIMENANO_UI_STYLE_H
+#    define FILE_SLIMENANO_UI_STYLE_H
 
 namespace slimenano::ui {
 
@@ -12,4 +12,4 @@ namespace slimenano::ui {
 
 } // namespace slimenano::ui
 
-#endif // __FILE_SLIMENANO_UI_STYLE_H
+#endif // FILE_SLIMENANO_UI_STYLE_H

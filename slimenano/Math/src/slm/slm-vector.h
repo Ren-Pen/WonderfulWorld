@@ -1,6 +1,6 @@
 #pragma once
-#ifndef __FILE_SLIMENANO_MATH_VEC_H
-    #define __FILE_SLIMENANO_MATH_VEC_H
+#ifndef FILE_SLIMENANO_MATH_VEC_H
+    #define FILE_SLIMENANO_MATH_VEC_H
     #include <cstddef>
     #include <array>
     #include <algorithm>

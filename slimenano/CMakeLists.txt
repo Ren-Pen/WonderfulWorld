@@ -5,7 +5,7 @@ project(
         DESCRIPTION "This is a slimenano utils package"
         LANGUAGES CXX)
 
-add_compile_definitions(_SLIMENANO_LIBRARY)
+add_compile_definitions(SLIMENANO_LIBRARY)
 
 set(NAMESPACE Slimenano)
 set(LIB_NAME Package)
