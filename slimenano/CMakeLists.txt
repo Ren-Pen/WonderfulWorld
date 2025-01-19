@@ -10,5 +10,5 @@ project(
 
 add_compile_definitions(SLIMENANO_LIBRARY)
 
-include(SlimenanoCmakeUtils.cmake)
+include(../slimenano-cmake-utils/SlimenanoCmakeUtils.cmake)
 slimenano_initialize_package_project(${NAMESPACE} ${PACKAGE_LIB_NAME})

@@ -109,11 +109,11 @@ function(slimenano_generate_subproject RegistryLibrary)
     string(TOLOWER ${RegistryLibrary} SLIMENANO_PROJECT_LIB_NAME_LOWER)
 
     if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.cpp)
-        configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/SlimenanoSubProjectEntry.cpp.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.cpp)
+        configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProjectEntry.cpp.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.cpp)
     endif ()
 
     if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.h)
-        configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/SlimenanoSubProjectEntry.h.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.h)
+        configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProjectEntry.h.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.h)
     endif ()
 
     slimenano_scan_source_file("${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src" SRC_FILES)
@@ -125,7 +125,7 @@ function(slimenano_generate_subproject RegistryLibrary)
             "${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src"
             SLIMENANO_PROJECT_INCLUDES_INSTALL)
 
-    configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt @ONLY)
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt @ONLY)
 endfunction()
 
 function(slimenano_create_project NAMESPACE TARGET GLOBAL_INCLUDE_PATH RegistryLibrary)
@@ -187,7 +187,7 @@ function(slimenano_process_available_libraries NAMESPACE TARGET)
     endif (NOT PackageAvailableLibraries STREQUAL "PackageAvailableLibraries-NOTFOUND")
     string(JOIN "\n\n" SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES ${SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES})
 
-    configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/SlimenanoPackageConfig.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${NAMESPACE}Config.cmake @ONLY)
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoPackageConfig.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${NAMESPACE}Config.cmake @ONLY)
 endfunction()
 
 function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
@@ -229,7 +229,7 @@ function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
             ${GLOBAL_INCLUDE_PATH}
             SLIMENANO_PROJECT_GLOBAL_INCLUDES_INSTALL)
 
-    configure_file(${CMAKE_CURRENT_LIST_DIR}/cmake/SlimenanoProject.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${SLIMENANO_PROJECT_NAMESPACE}Project.cmake @ONLY)
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoProject.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${SLIMENANO_PROJECT_NAMESPACE}Project.cmake @ONLY)
 
     include(${PROJECT_SOURCE_DIR}/cmake/${SLIMENANO_PROJECT_NAMESPACE}Project.cmake)
 
