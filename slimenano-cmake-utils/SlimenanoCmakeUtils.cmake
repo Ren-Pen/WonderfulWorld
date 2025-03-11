@@ -12,6 +12,20 @@ function(slimenano_get_sub_project_simple_name DIR OUT)
     endif ()
 endfunction()
 
+function(slimenano_get_sub_project_configuration DIR OUT)
+    file( GLOB SLIMENANO_PROJECT_FILES RELATIVE ${DIR} ${DIR}/*.slimenano.project )
+    list(LENGTH SLIMENANO_PROJECT_FILES PROJECT_FILES_SIZE)
+    if(PROJECT_FILES_SIZE GREATER 1)
+        message(FATAL_ERROR "[SLIMENANO] Slimenano sub project only allow one project define file.\n[SLIMENANO] Sub project: ${DIR}")
+    elseif (PROJECT_FILES_SIZE EQUAL 1)
+        list(GET SLIMENANO_PROJECT_FILES 0 PROJECT_SIMPLE_NAME)
+        file(STRINGS "${DIR}/${PROJECT_SIMPLE_NAME}" SLIMENANO_PROJECT_FILE_CONTENT)
+        set(${OUT} ${SLIMENANO_PROJECT_FILE_CONTENT} PARENT_SCOPE)
+    else ()
+        set(${OUT} "" PARENT_SCOPE)
+    endif ()
+endfunction()
+
 function(slimenano_scan_sub_project OUT)
     set(PackageFullLibraries "")
     file(GLOB subdirectory_list RELATIVE ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/*)
@@ -100,7 +114,7 @@ function(slimenano_generate_subproject RegistryLibrary)
 
     slimenano_get_sub_project_simple_name(${PROJECT_SOURCE_DIR}/${RegistryLibrary} SLIMENANO_PROJECT_SIMPLE_NAME)
 
-    message(STATUS "\n[SLIMENANO] Generating subproject: ${RegistryLibrary} Simple-Name: ${SLIMENANO_PROJECT_SIMPLE_NAME}")
+    message(STATUS "[SLIMENANO] Generating subproject: ${RegistryLibrary} Simple-Name: ${SLIMENANO_PROJECT_SIMPLE_NAME}")
 
     set(SLIMENANO_PROJECT_LIB_NAME "${RegistryLibrary}")
 
@@ -117,13 +131,16 @@ function(slimenano_generate_subproject RegistryLibrary)
     endif ()
 
     slimenano_scan_source_file("${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src" SRC_FILES)
-    string(JOIN [=[ ${SRC_DIR}/]=] SLIMENANO_PROJECT_SOURCE_FILES ${SRC_FILES})
-    string(PREPEND SLIMENANO_PROJECT_SOURCE_FILES [=[${SRC_DIR}/]=])
+    string(JOIN [=[" "${SRC_DIR}/]=] SLIMENANO_PROJECT_SOURCE_FILES ${SRC_FILES})
+    string(PREPEND SLIMENANO_PROJECT_SOURCE_FILES [=["${SRC_DIR}/]=])
+    string(APPEND SLIMENANO_PROJECT_SOURCE_FILES [=["]=])
 
     slimenano_generate_includes_install_commands([=[${SRC_DIR}/]=]
             [=[include/${NAMESPACE}]=]
             "${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src"
             SLIMENANO_PROJECT_INCLUDES_INSTALL)
+
+    slimenano_get_sub_project_configuration(${PROJECT_SOURCE_DIR}/${RegistryLibrary} SLIMENANO_PROJECT_SUB_CONTENT)
 
     configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt @ONLY)
 endfunction()

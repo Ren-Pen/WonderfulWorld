@@ -14,7 +14,8 @@
             "binaryDir": "${sourceDir}/build/Debug/MinGW",
             "installDir": "${sourceDir}/target",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             },
             "vendor": {
                 "jetbrains.com/clion": {
@@ -30,7 +31,8 @@
             "binaryDir": "${sourceDir}/build/Release/MinGW",
             "installDir": "${sourceDir}/target",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             },
             "vendor": {
                 "jetbrains.com/clion": {
@@ -46,6 +48,9 @@
                 "jetbrains.com/clion": {
                     "toolchain": "Visual Studio (x64)"
                 }
+            },
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             },
             "condition": {
                 "type": "equals",
