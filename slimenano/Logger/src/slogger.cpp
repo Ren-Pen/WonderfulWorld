@@ -1,0 +1,3 @@
+#include <slogger.h>
+
+SLIMENANO_LIBRARIES_VERSION(logger, SLIMENANO_LOGGER_VERSION);

@@ -12,7 +12,7 @@ function(slimenano_get_sub_project_simple_name DIR OUT)
     endif ()
 endfunction()
 
-function(slimenano_get_sub_project_configuration DIR OUT)
+function(slimenano_get_sub_project_configuration RegistryLibrary DIR SLIMENANO_PROJECT_SUB_CONTENT)
     file( GLOB SLIMENANO_PROJECT_FILES RELATIVE ${DIR} ${DIR}/*.slimenano.project )
     list(LENGTH SLIMENANO_PROJECT_FILES PROJECT_FILES_SIZE)
     if(PROJECT_FILES_SIZE GREATER 1)
@@ -20,9 +20,18 @@ function(slimenano_get_sub_project_configuration DIR OUT)
     elseif (PROJECT_FILES_SIZE EQUAL 1)
         list(GET SLIMENANO_PROJECT_FILES 0 PROJECT_SIMPLE_NAME)
         file(STRINGS "${DIR}/${PROJECT_SIMPLE_NAME}" SLIMENANO_PROJECT_FILE_CONTENT)
-        set(${OUT} ${SLIMENANO_PROJECT_FILE_CONTENT} PARENT_SCOPE)
-    else ()
-        set(${OUT} "" PARENT_SCOPE)
+        set(SLIMENANO_PROJECT_SUB_CONTENT "")
+        foreach(LINE IN LISTS SLIMENANO_PROJECT_FILE_CONTENT)
+            string(REGEX MATCH "#VERSION ([^\\s]*)" _ "${LINE}")
+            if (NOT "${CMAKE_MATCH_1}" STREQUAL "")
+                set_property(GLOBAL PROPERTY "SLIMENANO_PROJECT_VERSION_${RegistryLibrary}" "${CMAKE_MATCH_1}")
+            endif()
+            string(REGEX REPLACE "#.*" "" SLIMENANO_PROJECT_SUB_CONTENT_LINE "${LINE}")
+            if (NOT "${SLIMENANO_PROJECT_SUB_CONTENT_LINE}" STREQUAL "")
+                string(APPEND SLIMENANO_PROJECT_SUB_CONTENT "${SLIMENANO_PROJECT_SUB_CONTENT_LINE}\n")
+            endif()
+        endforeach()
+        set(SLIMENANO_PROJECT_SUB_CONTENT "${SLIMENANO_PROJECT_SUB_CONTENT}" PARENT_SCOPE)
     endif ()
 endfunction()
 
@@ -94,7 +103,7 @@ function(slimenano_generate_includes_install_commands HEADER_PREFIX DESTINATION_
         string(PREPEND INSTALL_INCLUDE_FILES "${INCLUDE_INSTALL_FILE_PREFIX}")
 
         set(TEMP_INSTALL_COMMAND [=[install(FILES ]=])
-        string(APPEND TEMP_INSTALL_COMMAND "${INSTALL_INCLUDE_FILES}\n")
+        string(APPEND TEMP_INSTALL_COMMAND "\"${INSTALL_INCLUDE_FILES}\"\n")
         string(APPEND TEMP_INSTALL_COMMAND "        DESTINATION ${DESTINATION_PREFIX}")
         string(APPEND TEMP_INSTALL_COMMAND "${INCLUDE_INSTALL_FILE_DESTINATION}")
         string(APPEND TEMP_INSTALL_COMMAND "\n)")
@@ -122,6 +131,8 @@ function(slimenano_generate_subproject RegistryLibrary)
 
     string(TOLOWER ${RegistryLibrary} SLIMENANO_PROJECT_LIB_NAME_LOWER)
 
+    set(SLIMENANO_PROJECT_LIB_VERSION "SLIMENANO_${SLIMENANO_PROJECT_LIB_NAME_UPPER}_VERSION")
+
     if(NOT EXISTS ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.cpp)
         configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProjectEntry.cpp.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src/${SLIMENANO_PROJECT_SIMPLE_NAME}.cpp)
     endif ()
@@ -140,9 +151,20 @@ function(slimenano_generate_subproject RegistryLibrary)
             "${PROJECT_SOURCE_DIR}/${RegistryLibrary}/src"
             SLIMENANO_PROJECT_INCLUDES_INSTALL)
 
-    slimenano_get_sub_project_configuration(${PROJECT_SOURCE_DIR}/${RegistryLibrary} SLIMENANO_PROJECT_SUB_CONTENT)
+    slimenano_get_sub_project_configuration(${RegistryLibrary} ${PROJECT_SOURCE_DIR}/${RegistryLibrary} SLIMENANO_PROJECT_SUB_CONTENT)
+    get_property(SLIMENANO_PROJECT_VERSION GLOBAL PROPERTY "SLIMENANO_PROJECT_VERSION_${RegistryLibrary}")
+    if ("${SLIMENANO_PROJECT_VERSION}" STREQUAL "")
+        set(SLIMENANO_PROJECT_VERSION ${PROJECT_VERSION})
+    endif()
 
-    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in ${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt @ONLY)
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in" "${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt" @ONLY)
+
+    get_property(SLIMENANO_VERSION_DEFINITIONS GLOBAL PROPERTY "SLIMENANO_VERSION_DEFINITIONS")
+
+    list(APPEND SLIMENANO_VERSION_DEFINITIONS "#    define SLIMENANO_${SLIMENANO_PROJECT_LIB_NAME_UPPER}_VERSION \"${SLIMENANO_PROJECT_VERSION}\"")
+
+    set_property(GLOBAL PROPERTY "SLIMENANO_VERSION_DEFINITIONS" "${SLIMENANO_VERSION_DEFINITIONS}")
+
 endfunction()
 
 function(slimenano_create_project NAMESPACE TARGET GLOBAL_INCLUDE_PATH RegistryLibrary)
@@ -225,6 +247,8 @@ function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
 
     slimenano_scan_sub_project(PackageFullLibraries)
 
+    set_property(GLOBAL PROPERTY "SLIMENANO_VERSION_DEFINITIONS" "")
+
     foreach (RegistryLibrary ${PackageFullLibraries})
 
         slimenano_create_project(${SLIMENANO_PROJECT_NAMESPACE}
@@ -232,6 +256,8 @@ function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
                 ${GLOBAL_INCLUDE_PATH}
                 ${RegistryLibrary}
         )
+
+        string(TOUPPER ${RegistryLibrary} SLIMENANO_PROJECT_LIB_NAME_UPPER)
 
     endforeach (RegistryLibrary ${PackageFullLibraries})
 
@@ -246,7 +272,12 @@ function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
             ${GLOBAL_INCLUDE_PATH}
             SLIMENANO_PROJECT_GLOBAL_INCLUDES_INSTALL)
 
+
+    get_property(SLIMENANO_VERSION_DEFINITIONS GLOBAL PROPERTY "SLIMENANO_VERSION_DEFINITIONS")
+    list(JOIN SLIMENANO_VERSION_DEFINITIONS "\n" SLIMENANO_VERSION_DEFINITIONS)
+
     configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoProject.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${SLIMENANO_PROJECT_NAMESPACE}Project.cmake @ONLY)
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/slimenano-version.h.in ${GLOBAL_INCLUDE_PATH}/slimenano-version.h @ONLY)
 
     include(${PROJECT_SOURCE_DIR}/cmake/${SLIMENANO_PROJECT_NAMESPACE}Project.cmake)
 

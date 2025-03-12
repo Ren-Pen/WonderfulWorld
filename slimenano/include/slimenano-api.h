@@ -11,13 +11,13 @@
 #            define SLIMENANO_API __declspec(dllexport)
 #        else
 #            define SLIMENANO_API __declspec(dllimport)
-#        endif //!SLIMENANO_LIBRARY
+#        endif //! SLIMENANO_LIBRARY
 #    elif __GNUC__
 #        ifdef SLIMENANO_LIBRARY
 #            define SLIMENANO_API __attribute__((visibility("default")))
 #        else
 #            define SLIMENANO_API
-#        endif //!SLIMENANO_LIBRARY
+#        endif //! SLIMENANO_LIBRARY
 #    else
 #        define SLIMENANO_API
 #        pragma warning Unknown dynamic link import / export semantics.
@@ -29,16 +29,16 @@
 #        define SLIMENANO_LOG_OUTPUT_STREAM std::cout
 #    endif
 
-#    define SLIMENANO_LIBRARIES_DECLARED(libName)                                                                    \
+#    define SLIMENANO_LIBRARIES_DECLARED(libName)                                                                      \
         namespace slimenano::libName {                                                                                 \
             SLIMENANO_API void version();                                                                              \
         }
 
-#    define SLIMENANO_LIBRARIES_VERSION(libName, versionStr)                                                         \
+#    define SLIMENANO_LIBRARIES_VERSION(libName, versionStr)                                                           \
         namespace slimenano::libName {                                                                                 \
             SLIMENANO_API void version() {                                                                             \
-                SLIMENANO_LOG_OUTPUT_STREAM << "Open source " << #libName << " library by slimenano" << "\n";        \
-                SLIMENANO_LOG_OUTPUT_STREAM << "Version: " << versionStr << "\n";                                    \
+                SLIMENANO_LOG_OUTPUT_STREAM << "Open source " << #libName << " library by slimenano" << "\n";          \
+                SLIMENANO_LOG_OUTPUT_STREAM << "Version: " << versionStr << "\n";                                      \
             }                                                                                                          \
         }
 
@@ -68,12 +68,12 @@ namespace slimenano {
             virtual ~serializable() = default;
 
           protected:
-            virtual size_t serialize(void* buffer, size_t bufferSize) = 0;
-            virtual size_t deserialize(const void* buffer, size_t bufferSize) = 0;
+            virtual size_t serialize(void *buffer, size_t bufferSize) = 0;
+            virtual size_t deserialize(const void *buffer, size_t bufferSize) = 0;
         };
 
     } // namespace internal
 
 } // namespace slimenano
 
-#endif //!FILE_SLIMENANO_API_H
+#endif //! FILE_SLIMENANO_API_H

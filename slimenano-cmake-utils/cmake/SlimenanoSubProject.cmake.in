@@ -5,7 +5,7 @@ set(NAMESPACE "@SLIMENANO_PROJECT_NAMESPACE@")
 
 project(
     Slimenano-${LIB_NAME}
-    VERSION 1.0.0
+    VERSION @SLIMENANO_PROJECT_VERSION@
     DESCRIPTION "This is a Slimenano free ${LIB_NAME} library"
     LANGUAGES CXX)
 
