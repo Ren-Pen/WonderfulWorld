@@ -1,0 +1,3 @@
+#include <slaudio.h>
+
+SLIMENANO_LIBRARIES_VERSION(audio, SLIMENANO_AUDIO_VERSION);

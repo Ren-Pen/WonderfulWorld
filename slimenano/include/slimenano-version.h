@@ -1,6 +1,7 @@
 #pragma once
 #ifndef FILE_SLIMENANO_VERSION_H
 #    define FILE_SLIMENANO_API_H
+#    define SLIMENANO_AUDIO_VERSION "0.0.1"
 #    define SLIMENANO_EVENT_VERSION "1.0.1"
 #    define SLIMENANO_LOGGER_VERSION "1.0.0"
 #    define SLIMENANO_MATH_VERSION "1.0.0"
