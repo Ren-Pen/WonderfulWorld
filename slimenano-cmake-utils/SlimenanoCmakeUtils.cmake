@@ -30,6 +30,12 @@ function(slimenano_get_sub_project_configuration RegistryLibrary DIR SLIMENANO_P
             if (NOT "${SLIMENANO_PROJECT_SUB_CONTENT_LINE}" STREQUAL "")
                 string(APPEND SLIMENANO_PROJECT_SUB_CONTENT "${SLIMENANO_PROJECT_SUB_CONTENT_LINE}\n")
             endif()
+            string(REGEX MATCH "#DEPENDS ([^\\s]*)" _ "${LINE}")
+            if (NOT "${CMAKE_MATCH_1}" STREQUAL "")
+                get_property(DEPENDS_LIST GLOBAL PROPERTY "SLIMENANO_PROJECT_DEPENDS_${RegistryLibrary}")
+                list(APPEND DEPENDS_LIST "${CMAKE_MATCH_1}")
+                set_property(GLOBAL PROPERTY "SLIMENANO_PROJECT_DEPENDS_${RegistryLibrary}" "${DEPENDS_LIST}")
+            endif()
         endforeach()
         set(SLIMENANO_PROJECT_SUB_CONTENT "${SLIMENANO_PROJECT_SUB_CONTENT}" PARENT_SCOPE)
     endif ()
@@ -158,6 +164,8 @@ function(slimenano_generate_subproject RegistryLibrary)
         set(SLIMENANO_PROJECT_VERSION ${PROJECT_VERSION})
     endif()
 
+    get_property(REGISTRY_LIBRARY_DEPENDS_LIST GLOBAL PROPERTY "SLIMENANO_PROJECT_DEPENDS_${RegistryLibrary}")
+
     configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoSubProject.cmake.in" "${PROJECT_SOURCE_DIR}/${RegistryLibrary}/CMakeLists.txt" @ONLY)
 
     get_property(SLIMENANO_VERSION_DEFINITIONS GLOBAL PROPERTY "SLIMENANO_VERSION_DEFINITIONS")
@@ -172,34 +180,24 @@ function(slimenano_create_project NAMESPACE TARGET GLOBAL_INCLUDE_PATH RegistryL
 
     string(TOUPPER ${RegistryLibrary} LibraryOptionName)
 
-    option(SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName} "Add Slimenano::${RegistryLibrary} library to Slimenano::Package" ON)
+    file(RELATIVE_PATH SLIMENANO_GLOBAL_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/${RegistryLibrary} ${GLOBAL_INCLUDE_PATH})
 
-    message(STATUS "[SLIMENANO] ADDED OPTION: SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}")
+    string(PREPEND SLIMENANO_GLOBAL_INCLUDE_PATH [=[${PROJECT_SOURCE_DIR}/]=])
 
-    if (${SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}})
-
-        file(RELATIVE_PATH SLIMENANO_GLOBAL_INCLUDE_PATH ${PROJECT_SOURCE_DIR}/${RegistryLibrary} ${GLOBAL_INCLUDE_PATH})
-
-        string(PREPEND SLIMENANO_GLOBAL_INCLUDE_PATH [=[${PROJECT_SOURCE_DIR}/]=])
-
-        slimenano_generate_subproject("${RegistryLibrary}")
-
-        add_subdirectory(${RegistryLibrary})
-
-        target_link_libraries(${TARGET} INTERFACE ${NAMESPACE}::${RegistryLibrary})
-
-    endif (${SLIMENANO_PACKAGE_INCLUDE_${LibraryOptionName}})
+    slimenano_generate_subproject("${RegistryLibrary}")
 
 endfunction()
 
-function(slimenano_process_available_libraries NAMESPACE TARGET)
+function(slimenano_process_available_libraries NAMESPACE TARGET PackageFullLibraries)
     set(SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES "")
 
     get_target_property(PackageAvailableLibraries ${TARGET} INTERFACE_LINK_LIBRARIES)
 
     if (NOT PackageAvailableLibraries STREQUAL "PackageAvailableLibraries-NOTFOUND")
 
-        foreach (AvailableLibrary IN LISTS PackageAvailableLibraries)
+        foreach (AvailableLibrary IN LISTS PackageFullLibraries)
+
+            set(AvailableLibrary ${NAMESPACE}::${AvailableLibrary})
 
             string(REPLACE "::" "" AvailableLibraryConfigName ${AvailableLibrary})
 
@@ -228,6 +226,36 @@ function(slimenano_process_available_libraries NAMESPACE TARGET)
     string(JOIN "\n\n" SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES ${SLIMENANO_PACKAGE_AVAILABLE_LIBRARIES})
 
     configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cmake/SlimenanoPackageConfig.cmake.in ${PROJECT_SOURCE_DIR}/cmake/${NAMESPACE}Config.cmake @ONLY)
+endfunction()
+
+function(slimenano_sort_dependencies DEPENDS OUT)
+
+    set(RESULT "")
+    foreach(RegistryLibrary ${DEPENDS})
+
+        set(DEPENDS_LIST "")
+
+        get_property(REGISTRY_LIBRARY_DEPENDS_LIST GLOBAL PROPERTY "SLIMENANO_PROJECT_DEPENDS_${RegistryLibrary}")
+        foreach(REGISTRY_DEPEND ${REGISTRY_LIBRARY_DEPENDS_LIST})
+            set(LIBRARY_ACCESS "PUBLIC")
+            if(${REGISTRY_DEPEND} MATCHES ".*\\.PRIVATE")
+                set(LIBRARY_ACCESS "PRIVATE")
+                STRING(REPLACE ".PRIVATE" "" REGISTRY_DEPEND ${REGISTRY_DEPEND})
+            endif()
+            list(APPEND DEPENDS_LIST ${REGISTRY_DEPEND})
+        endforeach()
+
+        slimenano_sort_dependencies("${DEPENDS_LIST}" DEPENDS_LIST)
+
+        list(PREPEND RESULT ${DEPENDS_LIST})
+        list(APPEND RESULT "${RegistryLibrary}")
+
+    endforeach()
+
+    list(REMOVE_DUPLICATES RESULT)
+
+    set("${OUT}" "${RESULT}" PARENT_SCOPE)
+
 endfunction()
 
 function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
@@ -262,9 +290,20 @@ function(slimenano_initialize_package_project NAMESPACE PACKAGE_LIB_NAME)
 
     endforeach (RegistryLibrary ${PackageFullLibraries})
 
+    slimenano_sort_dependencies("${PackageFullLibraries}" PackageFullLibraries)
+
+    foreach (RegistryLibrary ${PackageFullLibraries})
+
+        add_subdirectory(${RegistryLibrary})
+
+        target_link_libraries(${SLIMENANO_PROJECT_LIB_NAME} INTERFACE ${NAMESPACE}::${RegistryLibrary})
+
+    endforeach (RegistryLibrary ${PackageFullLibraries})
+
     slimenano_process_available_libraries(
             ${SLIMENANO_PROJECT_NAMESPACE}
             ${SLIMENANO_PROJECT_LIB_NAME}
+            "${PackageFullLibraries}"
     )
 
     slimenano_generate_includes_install_commands(

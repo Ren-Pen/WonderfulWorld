@@ -19,25 +19,42 @@ set(SRC_FILES
     @SLIMENANO_PROJECT_SOURCE_FILES@
 )
 
-add_library(${LIB_NAME} ${SRC_FILES})
+set(LIBRARY_TARGET_NAME SlimenanoPackageTarget${NAMESPACE}${LIB_NAME})
 
-target_include_directories(${LIB_NAME} PUBLIC
+add_library(${LIBRARY_TARGET_NAME} ${SRC_FILES})
+
+target_include_directories(${LIBRARY_TARGET_NAME} PUBLIC
     $<BUILD_INTERFACE:${SRC_DIR}>
     $<BUILD_INTERFACE:${GLOBAL_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:@SLIMENANO_PROJECT_INSTALL_HEADER_PREFIX@>
 )
 
-target_compile_features(${LIB_NAME} PUBLIC cxx_std_20)
+target_compile_features(${LIBRARY_TARGET_NAME} PUBLIC cxx_std_20)
 
 if(MSVC)
-    target_compile_options(${LIB_NAME} PRIVATE /W4 /WX)
+    target_compile_options(${LIBRARY_TARGET_NAME} PRIVATE /W4 /WX)
 else()
-    target_compile_options(${LIB_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(${LIBRARY_TARGET_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
 
-add_library(${NAMESPACE}::${LIB_NAME} ALIAS ${LIB_NAME})
+set(REGISTRY_LIBRARY_DEPENDS_LIST @REGISTRY_LIBRARY_DEPENDS_LIST@)
 
-install(TARGETS ${LIB_NAME} EXPORT ${NAMESPACE}${LIB_NAME}Targets
+foreach(REGISTRY_DEPEND ${REGISTRY_LIBRARY_DEPENDS_LIST})
+    set(LIBRARY_ACCESS "PUBLIC")
+    if(${REGISTRY_DEPEND} MATCHES ".*\\.PRIVATE")
+        set(LIBRARY_ACCESS "PRIVATE")
+        STRING(REPLACE ".PRIVATE" "" REGISTRY_DEPEND ${REGISTRY_DEPEND})
+    endif()
+    message(STATUS "[SLIMENANO] ${LIB_NAME} DEPEND ON ${REGISTRY_DEPEND} ACCESS ${LIBRARY_ACCESS}")
+    target_link_libraries(${LIBRARY_TARGET_NAME} ${LIBRARY_ACCESS} ${NAMESPACE}::${REGISTRY_DEPEND})
+endforeach()
+
+add_library(${NAMESPACE}::${LIB_NAME} ALIAS ${LIBRARY_TARGET_NAME})
+
+set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES EXPORT_NAME ${LIB_NAME})
+set_target_properties(${LIBRARY_TARGET_NAME} PROPERTIES OUTPUT_NAME ${LIB_NAME})
+
+install(TARGETS ${LIBRARY_TARGET_NAME} EXPORT ${NAMESPACE}${LIB_NAME}Targets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
